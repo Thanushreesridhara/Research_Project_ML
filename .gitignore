@@ -205,7 +205,7 @@ App/*.tfplan
 App/crash.log
 
 # Ignore editor-specific files
-App/.vscode/
+.vscode/
 App/.idea/
 App/*.swp
 
