@@ -3,6 +3,7 @@ import os
 import hashlib
 from flask import Flask
 from app import app, generate_checksum, verify_checksum, User
+from unittest.mock import patch
 
 @pytest.fixture
 def client():
@@ -55,8 +56,10 @@ def test_logout(client):
     assert response.status_code == 200
     assert b"Login" in response.data
 
-def test_generate_checksum():
+@patch('pandas.read_csv')
+def test_generate_checksum(mock_read_csv):
     """Test the generate_checksum function."""
+    mock_read_csv.return_value = None  # Mock the return value of pd.read_csv
     file_path = 'test_file.txt'
     with open(file_path, 'w') as f:
         f.write('test content')
@@ -64,8 +67,10 @@ def test_generate_checksum():
     assert checksum == hashlib.sha256(b'test content').hexdigest()
     os.remove(file_path)
 
-def test_verify_checksum():
+@patch('pandas.read_csv')
+def test_verify_checksum(mock_read_csv):
     """Test the verify_checksum function."""
+    mock_read_csv.return_value = None  # Mock the return value of pd.read_csv
     file_path = 'test_file.txt'
     checksum_path = 'test_checksum.txt'
     with open(file_path, 'w') as f:
