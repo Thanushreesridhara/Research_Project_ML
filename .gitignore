@@ -160,3 +160,65 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Environment files
+*.env
+App/.env
+
+# Virtual environments
+App/venv/
+App/ENV/
+App/env/
+App/env.bak/
+App/venv.bak/
+
+# Python cache files
+App/__pycache__/
+App/*.pyc
+App/*.pyo
+
+# Terraform state files
+App/*.tfstate
+App/*.tfstate.*
+
+# Terraform configuration files
+App/terraform/.terraform/
+
+# Terraform variable files
+App/*.tfvars
+App/*.tfvars.json
+
+# Terraform lock files
+App/.terraform.lock.hcl
+App/terraform/.terraform.lock.hcl
+
+# Terraform override files
+App/terraform/override.tf
+App/override.tf.json
+App/*_override.tf
+App/*_override.tf.json
+
+# Terraform plan files
+App/*.tfplan
+
+# Crash logs
+App/crash.log
+
+# Ignore editor-specific files
+App/.vscode/
+App/.idea/
+App/*.swp
+
+# Ignore unnecessary Terraform provider files
+App/terraform/.terraform
+
+# Ignore all .terraform directories
+App/**/.terraform/
+
+App/terraform/.terraform/providers/registry.terraform.io/hashicorp/azurerm/3.115.0/windows_386/terraform-provider-azurerm_v3.115.0_x5.exe
+
+# Ignore Terraform variable files
+*.tfvars
+
+App/terraform/.terraform/providers/registry.terraform.io/hashicorp/azurerm/3.115.0/windows_386/terraform-provider-azurerm_v3.115.0_x5.exe
+

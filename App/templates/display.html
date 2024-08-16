@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Results</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .data {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data, .data th, .data td {
+            border: 1px solid black;
+        }
+        .data th, .data td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prediction Results</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <h2>Confusion Matrix</h2>
+    <div>{{ cm_div | safe }}</div>
+    <h2>Distribution of Predicted Labels</h2>
+    <div>{{ dist_div | safe }}</div>
+    <h2>Sample Data with Predictions</h2>
+    <div>{{ sample_data_html | safe }}</div>
+</body>
+</html>

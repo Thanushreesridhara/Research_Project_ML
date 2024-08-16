@@ -1,0 +1,19 @@
+Flask==2.0.2
+pandas==1.3.3
+numpy==1.21.2
+torch==1.10.0
+scikit-learn==1.0
+imbalanced-learn==0.8.0
+plotly==5.3.1
+werkzeug==2.0.2
+matplotlib==3.4.3
+flask-login==0.5.0
+flask-limiter==1.1.0
+flask-talisman==0.8.1
+bandit==1.7.0  # Static Application Security Testing (SAST)
+flask-cors==3.0.10  # Cross-Origin Resource Sharing (CORS) support
+waitress==2.0.0  # WSGI server for Windows
+python-dotenv
+gunicorn
+flask
+pytest==8.3.2

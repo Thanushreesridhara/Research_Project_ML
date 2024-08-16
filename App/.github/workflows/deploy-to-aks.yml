@@ -1,0 +1,81 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    paths:
+      - 'App/app.py'
+      - 'App/Dockerfile'
+  pull_request:
+    paths:
+      - 'App/app.py'
+      - 'App/Dockerfile'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Retrieve secrets from Azure Key Vault
+        run: |
+          az keyvault secret show --name acr-username --vault-name RPcyberseckeyvault --query value -o tsv > acr-username.txt
+          az keyvault secret show --name acr-password --vault-name RPcyberseckeyvault --query value -o tsv > acr-password.txt
+          az keyvault secret show --name aks-resource-group --vault-name RPcyberseckeyvault --query value -o tsv > aks-resource-group.txt
+          az keyvault secret show --name aks-cluster-name --vault-name RPcyberseckeyvault --query value -o tsv > aks-cluster-name.txt
+          az keyvault secret show --name azure-subscription-id --vault-name RPcyberseckeyvault --query value -o tsv > azure-subscription-id.txt
+          az keyvault secret show --name azure-client-id --vault-name RPcyberseckeyvault --query value -o tsv > azure-client-id.txt
+          az keyvault secret show --name azure-secret --vault-name RPcyberseckeyvault --query value -o tsv > azure-secret.txt
+          az keyvault secret show --name azure-tenant-id --vault-name RPcyberseckeyvault --query value -o tsv > azure-tenant-id.txt
+
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+        env:
+          ACR_USERNAME: $(cat acr-username.txt)
+          ACR_PASSWORD: $(cat acr-password.txt)
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: App
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/my_flask_app:latest
+
+      - name: Set up Azure CLI
+        uses: azure/CLI@v1
+
+      - name: AKS deployment
+        run: |
+          az aks get-credentials --resource-group $(cat aks-resource-group.txt) --name $(cat aks-cluster-name.txt)
+          kubectl apply -f App/deployment.yaml
+          kubectl apply -f App/service.yaml
+          kubectl apply -f App/k8s/prometheus-deployment.yaml
+          kubectl apply -f App/k8s/prometheus-service.yaml
+          kubectl apply -f App/k8s/grafana-deployment.yaml
+          kubectl apply -f App/k8s/grafana-service.yaml
+        env:
+          AZURE_SUBSCRIPTION_ID: $(cat azure-subscription-id.txt)
+          AZURE_CLIENT_ID: $(cat azure-client-id.txt)
+          AZURE_SECRET: $(cat azure-secret.txt)
+          AZURE_TENANT_ID: $(cat azure-tenant-id.txt)
+
+      - name: Get External IPs
+        run: |
+          echo "Waiting for external IPs to be assigned..."
+          sleep 60  # Wait for the services to get external IPs
+          FLASK_APP_IP=$(kubectl get svc flask-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          PROMETHEUS_IP=$(kubectl get svc prometheus -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          GRAFANA_IP=$(kubectl get svc grafana -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo "Flask App URL: http://$FLASK_APP_IP"
+          echo "Prometheus Dashboard URL: http://$PROMETHEUS_IP:9090"
+          echo "Grafana Dashboard URL: http://$GRAFANA_IP"
