@@ -16,4 +16,4 @@ spec:
       - name: flask-app
         image: rpcybersecurityappacr.azurecr.io/my_flask_app:v1
         ports:
-        - containerPort: 5000
+        - containerPort: 8080

@@ -59,10 +59,6 @@ jobs:
           az aks get-credentials --resource-group $(cat aks-resource-group.txt) --name $(cat aks-cluster-name.txt)
           kubectl apply -f App/deployment.yaml
           kubectl apply -f App/service.yaml
-          kubectl apply -f App/k8s/prometheus-deployment.yaml
-          kubectl apply -f App/k8s/prometheus-service.yaml
-          kubectl apply -f App/k8s/grafana-deployment.yaml
-          kubectl apply -f App/k8s/grafana-service.yaml
         env:
           AZURE_SUBSCRIPTION_ID: $(cat azure-subscription-id.txt)
           AZURE_CLIENT_ID: $(cat azure-client-id.txt)
@@ -77,5 +73,3 @@ jobs:
           PROMETHEUS_IP=$(kubectl get svc prometheus -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           GRAFANA_IP=$(kubectl get svc grafana -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "Flask App URL: http://$FLASK_APP_IP"
-          echo "Prometheus Dashboard URL: http://$PROMETHEUS_IP:9090"
-          echo "Grafana Dashboard URL: http://$GRAFANA_IP"

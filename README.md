@@ -47,13 +47,13 @@ kubectl exec -it flask-app-549bfb6f4c-twltl -- curl http://localhost:5000
 
 az aks stop --resource-group flaskAppResourceGroup --name flaskAppAKSCluster
 
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+
 kubectl get services
+kubectl get svc -n monitoring
+kubectl get nodes -o wide
 kubectl logs flask-app-549bfb6f4c-7gx8k
 http://135.237.7.218
 
 ```
-
-
-
